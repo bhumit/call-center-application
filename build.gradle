@@ -1,0 +1,72 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.palantir.docker'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven() {
+        url = "http://download.oracle.com/maven"
+    }
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+    compile('org.springframework.boot:spring-boot-starter-amqp')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-web')
+    compileOnly('org.projectlombok:lombok')
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+
+
+    testCompileOnly('org.projectlombok:lombok')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.0.3'
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.6.4'
+
+    testCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.0'
+    testCompile group: 'org.apache.qpid', name: 'qpid-broker', version: '7.0.2'
+    testCompile group: 'org.apache.qpid', name: 'qpid-broker-plugins-amqp-0-8-protocol', version: '7.0.2'
+    testCompile group: 'org.apache.qpid', name: 'qpid-broker-plugins-memory-store', version: '7.0.2'
+    testCompile 'com.google.guava:guava:22.0'
+}
+
+group = 'com'
+bootJar {
+    baseName = 'callcenter'
+    version =  '0.1.0'
+}
+
+docker {
+    dependsOn build
+    name "${project.group}/${jar.baseName}"
+    files bootJar.archivePath
+    buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+}
+
+
+
+

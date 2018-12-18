@@ -1,0 +1,32 @@
+version: "3.1"
+
+services:
+  callcenter:
+    build: .
+    ports:
+      - 8080:8080
+    container_name: call-center
+    environment:
+      - MONGO_DB_HOST=mongodb
+      - MONGO_DB_PORT=27017
+      - RABBIT_MQ_HOST=rabbitmq
+      - RABBIT_MQ_PORT=5672
+      - CALL_CENTER_QUEUE_NAME=queuedcalls
+      - CALL_CENTER_TOPIC_EXCHANGE_NAME=queued.calls
+      - SCHEDULING_ENABLED=true
+      - SCHEDULING_HANDLECALL_CRON=*/5 * * * * *
+    depends_on:
+      - mongodb
+      - rabbitmq
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - 27017:27017
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672

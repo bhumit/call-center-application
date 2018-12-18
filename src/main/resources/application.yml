@@ -1,0 +1,70 @@
+info:
+    app:
+       name: {build.app.name}
+       group: {build.app.group}
+       description: {build.app.description}
+       version: {build.app.version}
+       buildtime: {build.app.buildtime}
+
+spring:
+        application:
+           name: {build.app.name}
+        jackson:
+             serialization:
+               write-dates-as-timestamps: false
+             mapper:
+                accept_case_insensitive_enums: true
+        date-format: yyyy-MM-dd HH:mm:ss
+        http:
+             encoding:
+                charset: ${SPRING_HTTP_ENCODING:UTF-8}
+                enabled: ${SPRING_HTTP_ENCODING_ENABLED:true}
+                force: ${SPRING_HTTP_ENCODING_FORCE:true}
+        jmx:
+            enabled: true
+        data:
+             mongodb:
+               host: ${MONGO_DB_HOST:localhost}
+               port: ${MONGO_DB_PORT:27017}
+               database: ${MONGO_DB_NAME:callcenter}
+        rabbitmq:
+            host: ${RABBIT_MQ_HOST:localhost}
+            port: ${RABBIT_MQ_PORT:5672}
+callcenter:
+    queue:
+        name: ${CALL_CENTER_QUEUE_NAME:queuedcalls}
+    topic-exchange:
+        name: ${CALL_CENTER_TOPIC_EXCHANGE_NAME:queued.calls}
+scheduling:
+    enabled: ${SCHEDULING_ENABLED:true}
+    handlecall:
+      cron: ${SCHEDULING_HANDLECALL_CRON:*/5 * * * * *}
+
+server:
+    port: ${HTTPS_PORT:8080}
+    ssl:
+      enabled: ${SSL_ENABLED:false}
+      key-store: ${SSL_KEY_STORE_PATH:classpath:keystore.p12}
+      key-store-password: ${SSL_KEY_STORE_PASSWORD:changeit}
+      key-store-type: PKCS12
+    tomcat:
+      uri-encoding: ${URI_ENCODING:UTF-8}
+management:
+  security:
+   enabled: false
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+  endpoints:
+    jmx:
+      exposure:
+       include: '*'
+    web:
+     exposure:
+      include: '*'
+      base-path: /actuator
+    cors:
+      allowed-origins: true
+      enabled-by-default: false
+
